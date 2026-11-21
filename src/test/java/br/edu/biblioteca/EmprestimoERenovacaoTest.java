@@ -3,7 +3,7 @@ package br.edu.biblioteca;
 import org.junit.jupiter.api.DisplayName;
 
 /**
- * Testes de caixa-preta (Fase 1) — Responsável: Claudemir.
+ * Testes de caixa-preta (Fase 1) — Responsável: Claudemir Vieira.
  *
  * Métodos cobertos:
  * - podeEmprestar(TipoUsuario tipo, int emprestimosAtivos, int multaPendenteCentavos, boolean possuiAtraso)

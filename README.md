@@ -3,9 +3,9 @@
 Repositório da equipe para o trabalho de Engenharia de Software.
 
 ## Equipe
-- **Vinicius**
-- **Paulo**
-- **Claudemir**
+- **Vinicius Rodrigues**
+- **Paulo Diego**
+- **Claudemir Vieira**
 
 ## Prazos
 - **24/11/2026 (23h59):** Entrega da **Fase 1** (Caixa-preta) — vale o último commit na `main`.
@@ -21,9 +21,9 @@ Cada integrante é responsável por levantar as classes de equivalência (válid
 
 | Integrante | Métodos | Arquivo de teste |
 | :--- | :--- | :--- |
-| **Vinicius** | `prazoDias`, `limiteEmprestimos`, `dataDevolucao` | `src/test/java/br/edu/biblioteca/PrazoLimiteDevolucaoTest.java` |
-| **Paulo** | `multaCentavos`, `multaTotalCentavos` | `src/test/java/br/edu/biblioteca/MultasTest.java` |
-| **Claudemir** | `podeEmprestar`, `podeRenovar` | `src/test/java/br/edu/biblioteca/EmprestimoERenovacaoTest.java` |
+| **Vinicius Rodrigues** | `prazoDias`, `limiteEmprestimos`, `dataDevolucao` | `src/test/java/br/edu/biblioteca/PrazoLimiteDevolucaoTest.java` |
+| **Paulo Diego** | `multaCentavos`, `multaTotalCentavos` | `src/test/java/br/edu/biblioteca/MultasTest.java` |
+| **Claudemir Vieira** | `podeEmprestar`, `podeRenovar` | `src/test/java/br/edu/biblioteca/EmprestimoERenovacaoTest.java` |
 
 ---
 

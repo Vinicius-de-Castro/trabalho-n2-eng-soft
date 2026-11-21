@@ -3,7 +3,7 @@ package br.edu.biblioteca;
 import org.junit.jupiter.api.DisplayName;
 
 /**
- * Testes de caixa-preta (Fase 1) — Responsável: Paulo.
+ * Testes de caixa-preta (Fase 1) — Responsável: Paulo Diego.
  *
  * Métodos cobertos:
  * - multaCentavos(TipoUsuario tipo, int diasAtraso)
