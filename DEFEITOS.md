@@ -52,6 +52,32 @@ O resultado esperado vem sempre da especificação (**Anexo A**).
 | Fase 1 | `multaTotalCentavos` | `ALUNO, {12, 0, 0}` | `1400` | `0` | V7 — atraso no início da lista |
 | Fase 1 | `multaTotalCentavos` | `ALUNO, {0, 30, 29, 3}` | `10000` | `5000` | VL3 — logo acima do teto total |
 | Fase 1 | `multaTotalCentavos` | `ALUNO, {0, 30, 30, 30}` | `10000` | `5000` | V6 — muito acima do teto total |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, -1, false` | `IllegalArgumentException` | nenhuma exceção | VL2 — multa logo abaixo de 0 |
+| Fase 1 | `podeEmprestar` | `PROFESSOR, 0, -1, false` | `IllegalArgumentException` | nenhuma exceção | VL2 — multa logo abaixo de 0 |
+| Fase 1 | `podeEmprestar` | `VISITANTE, 0, -1, false` | `IllegalArgumentException` | nenhuma exceção | VL2 — multa logo abaixo de 0 |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, -1, true` | `IllegalArgumentException` | nenhuma exceção | VL2 — multa negativa com atraso |
+| Fase 1 | `podeEmprestar` | `ALUNO, 3, -1, false` | `IllegalArgumentException` | nenhuma exceção | VL2 — multa negativa no limite de empréstimos |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, -500, false` | `IllegalArgumentException` | nenhuma exceção | I3 — multa negativa típica |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, -2147483648, false` | `IllegalArgumentException` | nenhuma exceção | VL2 — menor `int` (`Integer.MIN_VALUE`) |
+| Fase 1 | `podeEmprestar` | `ALUNO, 3, 0, false` | `false` | `true` | VL6 — exatamente no limite do aluno (3) |
+| Fase 1 | `podeEmprestar` | `PROFESSOR, 8, 0, false` | `false` | `true` | VL6 — exatamente no limite do professor (8) |
+| Fase 1 | `podeEmprestar` | `VISITANTE, 1, 0, false` | `false` | `true` | VL6 — exatamente no limite do visitante (1) |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 1001, false` | `false` | `true` | VL7 — multa logo acima de R$ 10,00 |
+| Fase 1 | `podeEmprestar` | `PROFESSOR, 0, 1001, false` | `false` | `true` | VL7 — multa logo acima de R$ 10,00 |
+| Fase 1 | `podeEmprestar` | `VISITANTE, 0, 1001, false` | `false` | `true` | VL7 — multa logo acima de R$ 10,00 |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 2500, false` | `false` | `true` | V4 — multa muito acima do limite |
+| Fase 1 | `podeEmprestar` | `PROFESSOR, 0, 5000, false` | `false` | `true` | V4 — multa muito acima do limite |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 2147483647, false` | `false` | `true` | VL8 — maior `int` (`Integer.MAX_VALUE`) |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 0, true` | `false` | `true` | V5 — atraso como único impeditivo |
+| Fase 1 | `podeEmprestar` | `PROFESSOR, 0, 0, true` | `false` | `true` | V5 — atraso como único impeditivo |
+| Fase 1 | `podeEmprestar` | `VISITANTE, 0, 0, true` | `false` | `true` | V5 — atraso como único impeditivo |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 1, true` | `false` | `true` | V5 — atraso com menor multa positiva válida |
+| Fase 1 | `podeEmprestar` | `ALUNO, 0, 999, true` | `false` | `true` | V5 — atraso logo abaixo do teto de multa |
+| Fase 1 | `podeEmprestar` | `ALUNO, 3, 1001, false` | `false` | `true` | V6 — limite exato + multa acima do teto |
+| Fase 1 | `podeEmprestar` | `ALUNO, 3, 0, true` | `false` | `true` | V6 — limite exato + atraso |
+| Fase 1 | `podeRenovar` | `VISITANTE, 0, false, false` | `false` | `true` | V1 / VL2 — visitante com 0 renovações (nunca renova) |
+| Fase 1 | `podeRenovar` | `VISITANTE, 1, false, false` | `false` | `true` | V1 / VL2 — visitante com 1 renovação (nunca renova) |
+| Fase 1 | `podeRenovar` | `PROFESSOR, 3, false, false` | `false` | `true` | VL6 — professor exatamente no limite de 3 renovações |
 
 ### Hipóteses de defeito — multas (Paulo Diego)
 Inferidas só pelas entradas e saídas acima (caixa-preta, sem abrir o `.jar`):
@@ -63,3 +89,13 @@ Inferidas só pelas entradas e saídas acima (caixa-preta, sem abrir o `.jar`):
 5. **`multaTotalCentavos` ignora o primeiro elemento da lista** — `{12}` -> 0, `{5, 12}` -> 1400, `{12, 0, 0}` -> 0, mas `{0, 12, 0}` -> 1400.
 6. **Teto total errado** — quando a soma passa de 10000 o método devolve 5000 (`{0, 30, 29, 3}` -> 5000), enquanto 9900 e 10000 exatos saem certos.
 7. **`multaTotalCentavos` não valida elemento negativo** — pode ser consequência do defeito 1.
+
+### Hipóteses de defeito — empréstimo e renovação (Claudemir Vieira)
+Inferidas só pelas entradas e saídas acima (caixa-preta, sem abrir o `.jar`):
+
+1. **`podeEmprestar` não valida `multaPendenteCentavos` negativa** — nenhuma exceção para `-1`, `-500` ou `Integer.MIN_VALUE` (já `tipo` nulo e `emprestimosAtivos < 0` lançam `IllegalArgumentException` normalmente).
+2. **Comparação de limite de empréstimos inclusiva (`<=` em vez de `<`)** — `ALUNO, 3`, `PROFESSOR, 8` e `VISITANTE, 1` retornam `true`, enquanto `4`, `9` e `2` retornam `false`.
+3. **Condições de multa e atraso combinadas com `||` em vez de `&&`** — multa acima de R$ 10,00 sem atraso (`1001`, `2500`, `Integer.MAX_VALUE`) retorna `true`, e atraso com multa até `999` (`0`, `1`, `999`) também retorna `true`; o empréstimo só é bloqueado quando há atraso **e** multa simultaneamente.
+4. **Fronteira da multa em `podeEmprestar` deslocada (`< 1000` em vez de `<= 1000`)** — com `possuiAtraso = true`, `multa = 999` devolve `true` enquanto `multa = 1000` já devolve `false` (o caso `multa = 1000` sem atraso só passa por coincidência devido ao defeito 3).
+5. **`podeRenovar` permite 4 renovações para `PROFESSOR` (em vez de 3)** — `PROFESSOR, 3, false, false` retorna `true`, enquanto `PROFESSOR, 4, false, false` retorna `false` (provável uso de `<= 3` ou limite `4`).
+6. **`podeRenovar` permite até 2 renovações para `VISITANTE` (em vez de nunca renovar)** — `VISITANTE` com `0` e `1` retorna `true`, e com `2` passa a retornar `false` (comportamento idêntico ao limite de `ALUNO`).
