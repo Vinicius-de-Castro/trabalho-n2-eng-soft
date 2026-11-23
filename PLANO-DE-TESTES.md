@@ -99,17 +99,51 @@ Para o array, além do valor de cada elemento, particionamos o **tamanho** (0, 1
 ---
 
 ## 6. `podeEmprestar(TipoUsuario tipo, int emprestimosAtivos, int multaPendenteCentavos, boolean possuiAtraso)` — *Claudemir Vieira*
-**Arquivo de teste:** `EmprestimoERenovacaoTest.java`
+**Arquivo de teste:** `EmprestimoERenovacaoTest.java` (`PodeEmprestarTest`)
+
+**Regra (Anexo A):** devolve `true` somente se as três condições valerem juntas: `emprestimosAtivos < limiteEmprestimos(tipo)` (`ALUNO`: 3, `PROFESSOR`: 8, `VISITANTE`: 1), `multaPendenteCentavos <= 1000` (R$ 10,00) e `possuiAtraso == false`. `tipo` nulo, `emprestimosAtivos < 0` ou `multaPendenteCentavos < 0` lançam `IllegalArgumentException`.
+Fronteiras: `emprestimosAtivos` em `-1 | 0` e `limite - 1 | limite | limite + 1` (`2 | 3 | 4` para aluno, `7 | 8 | 9` para professor, `0 | 1 | 2` para visitante); `multaPendenteCentavos` em `-1 | 0 | 1` e `999 | 1000 | 1001`; extremos de `int` (`Integer.MIN_VALUE`, `Integer.MAX_VALUE`); e cada condição booleana/impeditiva isolada e combinada.
 
 | ID | Tipo | Descrição da Classe / Limite | Entrada de Exemplo | Resultado Esperado | Teste que Cobre |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| *(preencher)* | | | | | |
+| I1 | Inválida | `tipo` nulo (com demais entradas válidas e também com condições impeditivas) | `null, 0, 0, false`; `null, 5, 2000, true` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoTipoNulo` |
+| VL1 | Valor-limite | `emprestimosAtivos` logo abaixo de 0 (`-1`) para cada tipo, inclusive com atraso/multa acima do limite, e `Integer.MIN_VALUE` | `ALUNO, -1, 0, false`; `PROFESSOR, -1, 0, false`; `VISITANTE, -1, 0, false`; `ALUNO, -1, 0, true`; `ALUNO, -1, 2000, false`; `ALUNO, -2147483648, 0, false` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoEmprestimosAtivosNegativo` |
+| I2 | Inválida | `emprestimosAtivos` negativo típico | `ALUNO, -5, 0, false` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoEmprestimosAtivosNegativo` |
+| VL2 | Valor-limite | `multaPendenteCentavos` logo abaixo de 0 (`-1`) para cada tipo, inclusive com atraso/limite de empréstimos, e `Integer.MIN_VALUE` | `ALUNO, 0, -1, false`; `PROFESSOR, 0, -1, false`; `VISITANTE, 0, -1, false`; `ALUNO, 0, -1, true`; `ALUNO, 3, -1, false`; `ALUNO, 0, -2147483648, false` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoMultaPendenteNegativa` |
+| I3 | Inválida | `multaPendenteCentavos` negativa típica | `ALUNO, 0, -500, false` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoMultaPendenteNegativa` |
+| I4 | Inválida | Múltiplas entradas inválidas simultâneas (`tipo` nulo e/ou ambos negativos) | `ALUNO, -1, -1, false`; `null, -1, -1, false` | `IllegalArgumentException` | `PodeEmprestarTest.lancaExcecaoQuandoMultiplasEntradasInvalidas` |
+| V1 / VL3 | Válida / Limite | Menor valor válido em todas as entradas (`0` empréstimos, `0` multa, sem atraso), cada tipo (`0` é também `limite - 1` do visitante) | `ALUNO, 0, 0, false`; `PROFESSOR, 0, 0, false`; `VISITANTE, 0, 0, false` | `true` | `PodeEmprestarTest.permiteEmprestimoQuandoTodasCondicoesSaoAtendidas` |
+| V2 | Válida | Valores intermediários dentro de todos os limites | `ALUNO, 1, 500, false`; `PROFESSOR, 4, 500, false` | `true` | `PodeEmprestarTest.permiteEmprestimoQuandoTodasCondicoesSaoAtendidas` |
+| VL4 | Valor-limite | `emprestimosAtivos` em `limite - 1` (máximo permitido), sem multa e sem atraso | `ALUNO, 2, 0, false`; `PROFESSOR, 7, 0, false` | `true` | `PodeEmprestarTest.permiteEmprestimoQuandoTodasCondicoesSaoAtendidas` |
+| VL5 | Valor-limite | Fronteira da multa permitida: `1`, `999` e `1000` (teto exato de R$ 10,00), para cada tipo e combinada com `limite - 1` | `ALUNO, 0, 1 / 999 / 1000, false`; `PROFESSOR, 0, 1000, false`; `VISITANTE, 0, 1000, false`; `ALUNO, 2, 1000, false`; `PROFESSOR, 7, 1000, false` | `true` | `PodeEmprestarTest.permiteEmprestimoQuandoTodasCondicoesSaoAtendidas` |
+| VL6 | Valor-limite | `emprestimosAtivos` exatamente no limite (`limite`) e logo acima (`limite + 1`), sem multa e sem atraso | `ALUNO, 3 / 4, 0, false`; `PROFESSOR, 8 / 9, 0, false`; `VISITANTE, 1 / 2, 0, false` | `false` | `PodeEmprestarTest.bloqueiaQuandoAtingeOuExcedeLimiteDeEmprestimos` |
+| V3 | Válida | `emprestimosAtivos` muito acima do limite, sem multa e sem atraso | `ALUNO, 10, 0, false`; `PROFESSOR, 20, 0, false`; `VISITANTE, 5, 0, false` | `false` | `PodeEmprestarTest.bloqueiaQuandoAtingeOuExcedeLimiteDeEmprestimos` |
+| VL7 | Valor-limite | `multaPendenteCentavos` logo acima do teto (`1001`), para cada tipo, com 0 empréstimos e sem atraso | `ALUNO, 0, 1001, false`; `PROFESSOR, 0, 1001, false`; `VISITANTE, 0, 1001, false` | `false` | `PodeEmprestarTest.bloqueiaQuandoMultaPendenteExcedeLimite` |
+| V4 | Válida | `multaPendenteCentavos` muito acima do teto, com 0 empréstimos e sem atraso | `ALUNO, 0, 2500, false`; `PROFESSOR, 0, 5000, false` | `false` | `PodeEmprestarTest.bloqueiaQuandoMultaPendenteExcedeLimite` |
+| VL8 | Valor-limite | Maior valor do tipo `int` (`Integer.MAX_VALUE`) para empréstimos ativos ou multa | `ALUNO, 2147483647, 0, false`; `ALUNO, 0, 2147483647, false` | `false` | `PodeEmprestarTest.bloqueiaQuandoAtingeOuExcedeLimiteDeEmprestimos`; `PodeEmprestarTest.bloqueiaQuandoMultaPendenteExcedeLimite` |
+| V5 | Válida | `possuiAtraso = true` como único impeditivo (para cada tipo e nas fronteiras de multa válida `0`, `1`, `999`, `1000` e `limite - 1`) | `ALUNO / PROFESSOR / VISITANTE, 0, 0, true`; `ALUNO, 0, 1 / 999 / 1000, true`; `ALUNO, 2, 1000, true` | `false` | `PodeEmprestarTest.bloqueiaQuandoPossuiAtraso` |
+| V6 | Válida | Múltiplas condições impeditivas simultâneas (pares e todas as três) | `ALUNO, 3, 1001, false`; `ALUNO, 3, 0, true`; `ALUNO, 0, 1001, true`; `ALUNO, 3, 1001, true`; `PROFESSOR, 8, 1500, true`; `VISITANTE, 1, 1500, true` | `false` | `PodeEmprestarTest.bloqueiaQuandoMultiplasCondicoesFalham` |
 
 ---
 
 ## 7. `podeRenovar(TipoUsuario tipo, int renovacoesFeitas, boolean possuiReserva, boolean emAtraso)` — *Claudemir Vieira*
-**Arquivo de teste:** `EmprestimoERenovacaoTest.java`
+**Arquivo de teste:** `EmprestimoERenovacaoTest.java` (`PodeRenovarTest`)
+
+**Regra (Anexo A):** `VISITANTE` nunca renova (`false`). `ALUNO` renova até 2 vezes (`renovacoesFeitas < 2`) e `PROFESSOR` até 3 vezes (`renovacoesFeitas < 3`). Em qualquer caso, só é possível renovar se `possuiReserva == false` e `emAtraso == false`. `tipo` nulo ou `renovacoesFeitas < 0` lançam `IllegalArgumentException`, para qualquer tipo.
+Fronteiras: `renovacoesFeitas` em `-1 | 0` (para todos os tipos, inclusive visitante e com reserva/atraso), `1 | 2 | 3` para aluno, `2 | 3 | 4` para professor, extremos de `int` (`Integer.MIN_VALUE`, `Integer.MAX_VALUE`), além de `possuiReserva` e `emAtraso` isolados e combinados.
 
 | ID | Tipo | Descrição da Classe / Limite | Entrada de Exemplo | Resultado Esperado | Teste que Cobre |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| *(preencher)* | | | | | |
+| I1 | Inválida | `tipo` nulo (com demais entradas válidas e também com reserva, atraso ou renovações negativas) | `null, 0, false, false`; `null, 0, true, false`; `null, 0, false, true`; `null, -1, false, false` | `IllegalArgumentException` | `PodeRenovarTest.lancaExcecaoQuandoTipoNulo` |
+| VL1 | Valor-limite | `renovacoesFeitas` logo abaixo de 0 (`-1`) para **todos** os tipos (inclusive `VISITANTE` e combinado com reserva/atraso), e `Integer.MIN_VALUE` | `ALUNO / PROFESSOR / VISITANTE, -1, false, false`; `ALUNO, -1, true, false`; `PROFESSOR, -1, false, true`; `VISITANTE, -1, true, true`; `ALUNO, -2147483648, false, false` | `IllegalArgumentException` | `PodeRenovarTest.lancaExcecaoQuandoRenovacoesNegativas` |
+| I2 | Inválida | `renovacoesFeitas` negativo típico (`-5`), para cada tipo | `ALUNO, -5, false, false`; `PROFESSOR, -5, false, false`; `VISITANTE, -5, false, false` | `IllegalArgumentException` | `PodeRenovarTest.lancaExcecaoQuandoRenovacoesNegativas` |
+| V1 / VL2 | Válida / Limite | `VISITANTE` nunca renova (`0` = menor valor válido, `1`, `2`, `3`, `5`), sem reserva e sem atraso | `VISITANTE, 0 / 1 / 2 / 3 / 5, false, false` | `false` | `PodeRenovarTest.visitanteNuncaRenova` |
+| V2 / VL3 | Válida / Limite | `ALUNO` abaixo do limite de renovações (`0` = 1ª renovação / menor valor válido; `1` = 2ª e última renovação permitida), sem reserva e sem atraso | `ALUNO, 0, false, false`; `ALUNO, 1, false, false` | `true` | `PodeRenovarTest.alunoRenovaAteDuasVezes` |
+| VL4 | Valor-limite | `ALUNO` no limite exato (`2`) e logo acima (`3`), sem reserva e sem atraso | `ALUNO, 2, false, false`; `ALUNO, 3, false, false` | `false` | `PodeRenovarTest.alunoRenovaAteDuasVezes` |
+| V3 | Válida | `ALUNO` muito acima do limite (`10`), sem reserva e sem atraso | `ALUNO, 10, false, false` | `false` | `PodeRenovarTest.alunoRenovaAteDuasVezes` |
+| V4 / VL5 | Válida / Limite | `PROFESSOR` abaixo do limite de renovações (`0` = menor valor válido, `1` = intermediário, `2` = 3ª e última renovação permitida), sem reserva e sem atraso | `PROFESSOR, 0, false, false`; `PROFESSOR, 1, false, false`; `PROFESSOR, 2, false, false` | `true` | `PodeRenovarTest.professorRenovaAteTresVezes` |
+| VL6 | Valor-limite | `PROFESSOR` no limite exato (`3`) e logo acima (`4`), sem reserva e sem atraso | `PROFESSOR, 3, false, false`; `PROFESSOR, 4, false, false` | `false` | `PodeRenovarTest.professorRenovaAteTresVezes` |
+| V5 / VL7 | Válida / Limite | `PROFESSOR` muito acima do limite (`10`) e maior valor do tipo `int` (`Integer.MAX_VALUE`), sem reserva e sem atraso | `PROFESSOR, 10, false, false`; `PROFESSOR, 2147483647, false, false` | `false` | `PodeRenovarTest.professorRenovaAteTresVezes` |
+| V6 | Válida | Obra com reserva (`possuiReserva = true`) como único impeditivo, para cada tipo (inclusive na última renovação permitida) | `ALUNO, 0 / 1, true, false`; `PROFESSOR, 0 / 2, true, false`; `VISITANTE, 0, true, false` | `false` | `PodeRenovarTest.bloqueiaQuandoPossuiReserva` |
+| V7 | Válida | Empréstimo em atraso (`emAtraso = true`) como único impeditivo, para cada tipo (inclusive na última renovação permitida) | `ALUNO, 0 / 1, false, true`; `PROFESSOR, 0 / 2, false, true`; `VISITANTE, 0, false, true` | `false` | `PodeRenovarTest.bloqueiaQuandoEmAtraso` |
+| V8 | Válida | Múltiplas condições impeditivas simultâneas (reserva + atraso, limite + reserva, limite + atraso e todas juntas) | `ALUNO / PROFESSOR / VISITANTE, 0, true, true`; `ALUNO, 2, true, false`; `ALUNO, 2, false, true`; `ALUNO, 2, true, true`; `PROFESSOR, 3, true, false`; `PROFESSOR, 3, false, true`; `PROFESSOR, 3, true, true` | `false` | `PodeRenovarTest.bloqueiaQuandoMultiplasCondicoesFalham` |
